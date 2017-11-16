@@ -229,15 +229,27 @@ class Output(object):
         :return: a list of the widths of the columns that the fields
            in data should be placed into for output
         """
-        if total_width is None:
-            total_width = self.term.columns
-
         cols = len(data)
         # Convert the data to ascending list of tuples, (field_length, pkgs)
         pdata = data
         data = [None] * cols # Don't modify the passed in data
         for d in range(0, cols):
             data[d] = sorted(pdata[d].items())
+
+        # if not running in interactive terminal (pipe to grep, redirect to file...)
+        # just return maximal lengths of each data column.
+        if not self.term.isatty:
+            full_columns = []
+            for col in data:
+                if col:
+                    full_columns.append(col[-1][0])
+                else:
+                    full_columns.append(0)
+            full_columns[0] += len(indent)
+            return full_columns
+
+        if total_width is None:
+            total_width = self.term.columns
 
         #  We start allocating 1 char to everything but the last column, and a
         # space between each (again, except for the last column). Because

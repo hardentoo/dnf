@@ -177,7 +177,8 @@ class Term(object):
         # If the stream isn't a tty, then assume it has no capabilities.
         if not term_stream:
             term_stream = sys.stdout
-        if not term_stream.isatty():
+        self.isatty = term_stream.isatty()
+        if not self.isatty:
             self.__enabled = False
             return
 
